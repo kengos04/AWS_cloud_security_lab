@@ -45,7 +45,7 @@ sse_algorithm = "AES256"
 resource "aws_s3_bucket_public_access_block" "security_lab"{
 bucket = aws_s3_bucket.security_lab.id
 block_public_acls = true
-block_public_policy  = false
+block_public_policy  = true
 ignore_public_acls = true
 restrict_public_buckets = true
 }

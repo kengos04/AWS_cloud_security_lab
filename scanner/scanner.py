@@ -1,4 +1,7 @@
 import boto3
+from boto3 import s3
+from botocore.retries import bucket
+
 
 def cloud_security_check(security_group):
     print("\n==============================\n    CLOUD SECURITY SCANNER     \n==============================\n")
@@ -61,24 +64,59 @@ def check_database_exposure(security_group):
 
     pass
 
+def check_s3_public_access(client, bucketname):
+    public_access_block = client.get_public_access_block(Bucket = bucketname)["PublicAccessBlockConfiguration"]
+    block_public_acls = public_access_block["BlockPublicAcls"]
+    ignore_public_acls = public_access_block["IgnorePublicAcls"]
+    block_public_policy = public_access_block["BlockPublicPolicy"]
+    restrict_public_buckets = public_access_block["RestrictPublicBuckets"]
+    if not block_public_acls or not ignore_public_acls or not restrict_public_buckets or not block_public_policy:
+        print("Rule: S3-001")
+        print("Crucial")
+        print("S3 bucket has missing public access blocks")
+        print(f"Resource: {bucketname}")
+
+    pass
+
+def check_s3_approved_encryption(client, bucketname):
+    encryption_rules = client.get_bucket_encryption(Bucket = bucketname)["ServerSideEncryptionConfiguration"]["Rules"]
+    for rule in encryption_rules:
+        encryption = rule["ApplyServerSideEncryptionByDefault"]
+        algorithm = encryption.get("SSEAlgorithm")
+        if algorithm in ["AES256","aws:kms"]:
+            print("Using approved encryption: ", algorithm)
+        else:
+            print("Rule: S3-002")
+            print("Medium")
+            print("Using unapproved encryption: ", algorithm)
+            print(f"Resource: {bucketname}")
+
+    pass
+
+def check_s3_versioning(client,bucketname):
+    versioning = client.get_bucket_versioning(Bucket = bucketname)
+    if versioning.get("Status") == "Enabled":
+        print("Versioning Enabled")
+    else:
+        print("Rule S3-003")
+        print("Medium")
+        print("Versioning Disabled")
+        print(f"Resource: {bucketname}")
+
+    pass
 endpoint_url = "http://localhost.localstack.cloud:4566"
 def main():
     ec2_client = boto3.client("ec2", endpoint_url=endpoint_url,region_name="eu-west-1",aws_access_key_id="test",aws_secret_access_key = "test")
-    result = ec2_client.describe_security_groups()
-    for sg in result["SecurityGroups"]:
-        print("\n==============================")
-        print("Name:", sg["GroupName"])
-        print("ID:", sg["GroupId"])
-        print("VPC:", sg["VpcId"])
-        print("Rules:")
-        has_rules = False
-        for rule in sg["IpPermissions"]:
-            print(rule)
-            has_rules = True
-        if has_rules:
-            print(sg["IpPermissions"][0]["IpProtocol"])
-        check_ssh_exposure(sg)
-        check_database_exposure(sg)
+    ec2_result = ec2_client.describe_security_groups()
+    s3_client = boto3.client("s3",endpoint_url=endpoint_url,aws_access_key_id="test",aws_secret_access_key = "test")
+    s3_result = s3_client.list_buckets()
+    for bucket in s3_result["Buckets"]:
+        bucket_name = bucket["Name"]
+        print(bucket_name)
+        versioning = s3_client.get_bucket_versioning(Bucket = bucket_name)
+        #print(versioning)
+        check_s3_versioning(s3_client,bucket_name)
+
 
 if __name__ == "__main__":
     main()

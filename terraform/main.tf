@@ -18,6 +18,13 @@ Name = "Security Lab Bucket"
 Environment = "Lab"
 }
 }
+resource "aws_s3_bucket" "weak_s3" {
+  bucket = "weak-bucket"
+tags = {
+Name = "Security Lab Weak Bucket"
+Environment = "Lab"
+}
+}
 
 resource "aws_s3_bucket_versioning" "security_lab"{
 bucket = aws_s3_bucket.security_lab.id
@@ -38,7 +45,7 @@ sse_algorithm = "AES256"
 resource "aws_s3_bucket_public_access_block" "security_lab"{
 bucket = aws_s3_bucket.security_lab.id
 block_public_acls = true
-block_public_policy  = true
+block_public_policy  = false
 ignore_public_acls = true
 restrict_public_buckets = true
 }

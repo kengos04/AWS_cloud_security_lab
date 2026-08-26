@@ -152,3 +152,65 @@ tags = {
 Name = "Lab_Public_EC2"
 }
 }
+
+resource "aws_iam_policy" "weak_policy" {
+name = "weak_test_policy"
+description = "Used for testing over-permission"
+policy = jsonencode({
+Version =  "2012-10-17"
+Statement = [
+{
+Effect = "Allow"
+Action = "*"
+Resource = "*"
+}
+]
+})
+}
+
+resource "aws_iam_policy" "wildcard_policy" {
+name = "wildcard_test_policy"
+description = "Used for testing over-resource"
+policy = jsonencode({
+Version =  "2012-10-17"
+Statement = [
+{
+Effect = "Allow"
+Action = ["s3:*","ec2:*","s3:Getobject"]
+Resource = "*"
+}
+]
+})
+}
+
+resource "aws_iam_policy" "broad_policy" {
+name = "iam_test_policy"
+description = "Used for testing sensitive iam policy"
+policy = jsonencode({
+Version =  "2012-10-17"
+Statement = [
+{
+Effect = "Allow"
+Action = ["iam:CreateUser","iam:AttachUserPolicy","iam:PassRole"]
+Resource = "*"
+}
+]
+})
+}
+
+resource "aws_iam_policy" "passrole_policy" {
+  name        = "passrole-policy"
+  description = "Intentionally vulnerable PassRole policy"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+
+    Statement = [
+      {
+        Effect   = "Allow"
+        Action   = "iam:PassRole"
+        Resource = "*"
+      }
+    ]
+  })
+}

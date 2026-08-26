@@ -1,0 +1,12 @@
+{
+    "target": "LocalStack",
+    "region": "eu-west-1",
+    "findings": [
+        {
+            "rule_id": "S3-003",
+            "severity": "Medium",
+            "title": "S3 bucket versioning is disabled",
+            "resource": "weak-bucket"
+        }
+    ]
+}

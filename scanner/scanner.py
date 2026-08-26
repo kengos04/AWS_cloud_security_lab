@@ -1,3 +1,4 @@
+import json
 import boto3
 from boto3 import s3
 from botocore.retries import bucket
@@ -34,6 +35,14 @@ def print_findings(findings):
         print(f"Title:    {finding['title']}")
         print(f"Resource: {finding.get('resource', 'N/A')}")
 
+def save_findings(findings):
+    report = {
+        "target": "LocalStack",
+        "region": "eu-west-1",
+        "findings": findings
+    }
+    with open("findings.json", "w") as file:
+        json.dump(report, file,indent=4)
 
 endpoint_url = "http://localhost.localstack.cloud:4566"
 def main():
@@ -41,7 +50,9 @@ def main():
     ec2_result = ec2_client.describe_security_groups()
     s3_client = boto3.client("s3",endpoint_url=endpoint_url,aws_access_key_id="test",aws_secret_access_key = "test")
     s3_result = s3_client.list_buckets()
-    print_findings(cloud_security_check(ec2_result["SecurityGroups"][0],s3_client,s3_result))
+    findings = cloud_security_check(ec2_result["SecurityGroups"][0],s3_client,s3_result)
+    print_findings(findings)
+    save_findings(findings)
 
 
 

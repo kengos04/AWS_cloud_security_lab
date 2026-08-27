@@ -138,6 +138,9 @@ ami = "ami-0ba259e664698cbfc"
 instance_type  = "t2.micro"
 subnet_id = aws_subnet.private_subnet.id
 vpc_security_group_ids = [aws_security_group.private_sg.id]
+ metadata_options {
+    http_tokens = "required"
+  }
 tags = {
 Name = "Lab_Private_EC2"
 }
@@ -147,6 +150,10 @@ resource "aws_instance" "ec2_public" {
 ami = "ami-0ba259e664698cbfc"
 instance_type  = "t2.micro"
 subnet_id = aws_subnet.public_subnet.id
+associate_public_ip_address = true
+  metadata_options {
+    http_tokens = "optional"
+  }
 vpc_security_group_ids = [aws_security_group.public_sg.id]
 tags = {
 Name = "Lab_Public_EC2"
@@ -184,7 +191,7 @@ Resource = "*"
 }
 
 resource "aws_iam_policy" "broad_policy" {
-name = "iam_test_policy"
+name = "iam_testing_policy"
 description = "Used for testing sensitive iam policy"
 policy = jsonencode({
 Version =  "2012-10-17"

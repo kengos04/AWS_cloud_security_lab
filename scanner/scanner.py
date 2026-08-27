@@ -5,23 +5,27 @@ from botocore.retries import bucket
 from checks.s3 import check_s3_versioning,check_s3_public_access,check_s3_approved_encryption
 from checks.security_groups import check_database_exposure,check_ssh_exposure,check_rdp_exposure
 from checks.iam import check_iam_unrestricted_permission,check_iam_wildcard_permission,check_iam_sensitive_iam_permission,check_iam_broad_permission,check_iam_pass_role
+from checks.ec2 import check_ec2_public_address,check_ec2_metadata_service,check_ec2_ebs_encryption,check_ec2_termination_protection
 
-def cloud_security_check(security_group,s3_client,buckets,iam_client,iam_response):
+def cloud_security_check(ec2_client,s3_client,iam_client):
     findings = []
     #Security Group Checks
-    findings.extend(check_database_exposure(security_group))
-    findings.extend(check_ssh_exposure(security_group))
-    findings.extend(check_rdp_exposure(security_group))
+    ec2_security_groups = ec2_client.describe_security_groups()
+    findings.extend(check_database_exposure(ec2_security_groups["SecurityGroups"][0]))
+    findings.extend(check_ssh_exposure(ec2_security_groups["SecurityGroups"][0]))
+    findings.extend(check_rdp_exposure(ec2_security_groups["SecurityGroups"][0]))
 
     #S3 checks
-    for bucket in buckets["Buckets"]:
+    s3_buckets = s3_client.list_buckets()
+    for bucket in s3_buckets["Buckets"]:
         bucket_name = bucket["Name"]
         findings.extend(check_s3_approved_encryption(s3_client,bucket_name))
         findings.extend(check_s3_public_access(s3_client,bucket_name))
         findings.extend(check_s3_versioning(s3_client,bucket_name))
 
     #IAM Checks
-    for policy in iam_response["Policies"]:
+    iam_policies = iam_client.list_policies(Scope="Local")
+    for policy in iam_policies["Policies"]:
         policy_version = iam_client.get_policy_version(PolicyArn=policy["Arn"],VersionId = policy["DefaultVersionId"])
         document = policy_version["PolicyVersion"]["Document"]
         findings.extend(check_iam_unrestricted_permission(document,policy["PolicyName"]))
@@ -29,6 +33,19 @@ def cloud_security_check(security_group,s3_client,buckets,iam_client,iam_respons
         findings.extend(check_iam_sensitive_iam_permission(document,policy["PolicyName"]))
         findings.extend(check_iam_broad_permission(document,policy["PolicyName"]))
         findings.extend(check_iam_pass_role(document,policy["PolicyName"]))
+
+    #EC2 Check
+    ec2_volumes = ec2_client.describe_volumes()
+    ec2_reservations = ec2_client.describe_instances()
+    for reservation in ec2_reservations["Reservations"]:
+        for instance in reservation["Instances"]:
+            ec2_instance_attribute = ec2_client.describe_instance_attribute(InstanceId=instance["InstanceId"],Attribute="disableApiTermination")
+            instance_name = instance.get("Tags")[0]["Value"]
+            findings.extend(check_ec2_public_address(instance,instance_name))
+            findings.extend(check_ec2_metadata_service(instance,instance_name))
+            findings.extend(check_ec2_ebs_encryption(instance,instance_name,ec2_volumes))
+            findings.extend(check_ec2_termination_protection(instance_name,ec2_instance_attribute))
+
     return findings
 
 def print_findings(findings):
@@ -59,25 +76,21 @@ def save_findings(findings):
 endpoint_url = "http://localhost.localstack.cloud:4566"
 def main():
     ec2_client = boto3.client("ec2", endpoint_url=endpoint_url,region_name="eu-west-1",aws_access_key_id="test",aws_secret_access_key = "test")
-    ec2_result = ec2_client.describe_security_groups()
     s3_client = boto3.client("s3",endpoint_url=endpoint_url,aws_access_key_id="test",aws_secret_access_key = "test")
-    s3_result = s3_client.list_buckets()
     iam_client = boto3.client("iam",endpoint_url=endpoint_url,region_name = "eu-west-1",aws_access_key_id="test",aws_secret_access_key = "test")
-    iam_response = iam_client.list_policies(Scope="Local")
-    for policy in iam_response["Policies"]:
-        #print(policy)
-        policy_arn = policy["Arn"]
-        policy_version = iam_client.get_policy_version(PolicyArn=policy_arn,VersionId = policy["DefaultVersionId"])
-        #print(policy_version)
-        document = policy_version["PolicyVersion"]["Document"]
-        #print(document)
-        action = document["Statement"][0]["Action"]
-        effect = document["Statement"][0]["Effect"]
-        resource = document["Statement"][0]["Resource"]
-        #print(f"{action} -> {effect} -> {resource}")
-        #print(check_iam_unrestricted_permission(document, policy["PolicyName"]))
 
-    findings = cloud_security_check(ec2_result["SecurityGroups"][0],s3_client,s3_result,iam_client,iam_response)
+    #Delete later
+    ec2_reservations = ec2_client.describe_instances()
+    ec2_volumes = ec2_client.describe_volumes()
+
+    for reservation in ec2_reservations["Reservations"]:
+        for instance in reservation["Instances"]:
+            print(instance)
+
+
+
+
+    findings = cloud_security_check(ec2_client,s3_client,iam_client)
     print_findings(findings)
     #save_findings(findings)
 

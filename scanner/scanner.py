@@ -1,7 +1,7 @@
-import json
-import boto3
-from boto3 import s3
-from botocore.retries import bucket
+import sys
+import argparse
+from report import create_report
+from client import create_client
 from checks.s3 import check_s3_versioning,check_s3_public_access,check_s3_approved_encryption
 from checks.security_groups import check_database_exposure,check_ssh_exposure,check_rdp_exposure
 from checks.iam import check_iam_unrestricted_permission,check_iam_wildcard_permission,check_iam_sensitive_iam_permission,check_iam_broad_permission,check_iam_pass_role
@@ -62,37 +62,35 @@ def print_findings(findings):
         print(f"Title:    {finding['title']}")
         print(f"Resource: {finding.get('resource', 'N/A')}")
 
-def save_findings(findings):
-    report = {
-        "target": "LocalStack",
-        "region": "eu-west-1",
-        "findings": findings
-    }
-    with open("findings.json", "w") as file:
-        json.dump(report, file,indent=4)
 
 
+def parse_arguments():
+    parser = argparse.ArgumentParser(description="Cloud Security Checker")
+    parser.add_argument(
+        "--endpoint",
+        default="http://localhost:4566",
+        help="AWS endpoint URL"
+    )
+    parser.add_argument(
+        "--region",
+        default="ew-west-1",
+        help="AWS region"
+    )
+    return parser.parse_args()
 
-endpoint_url = "http://localhost.localstack.cloud:4566"
+#endpoint_url = "http://localhost.localstack.cloud:4566"
 def main():
-    ec2_client = boto3.client("ec2", endpoint_url=endpoint_url,region_name="eu-west-1",aws_access_key_id="test",aws_secret_access_key = "test")
-    s3_client = boto3.client("s3",endpoint_url=endpoint_url,aws_access_key_id="test",aws_secret_access_key = "test")
-    iam_client = boto3.client("iam",endpoint_url=endpoint_url,region_name = "eu-west-1",aws_access_key_id="test",aws_secret_access_key = "test")
-
-    #Delete later
-    ec2_reservations = ec2_client.describe_instances()
-    ec2_volumes = ec2_client.describe_volumes()
-
-    for reservation in ec2_reservations["Reservations"]:
-        for instance in reservation["Instances"]:
-            print(instance)
-
-
-
-
+    args = parse_arguments()
+    endpoint_url = args.endpoint
+    region = args.region
+    ec2_client,s3_client,iam_client = create_client(endpoint_url,"eu-west-1")
     findings = cloud_security_check(ec2_client,s3_client,iam_client)
-    print_findings(findings)
-    #save_findings(findings)
+    #print_findings(findings)
+    create_report(findings)
+    for finding in findings:
+        if finding.get("severity") in ["Critical","High"]:
+            sys.exit(1)
+    sys.exit(0)
 
 
 

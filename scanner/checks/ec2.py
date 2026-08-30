@@ -13,7 +13,6 @@ def check_ec2_public_address(instance,instance_name):
 def check_ec2_metadata_service(instance,instance_name):
     metadata_option = instance.get("MetadataOptions",[])
     if metadata_option.get("HttpTokens") == "optional":
-        print(metadata_option.get("HttpTokens"))
         return [{
             "rule_id": "EC2-002",
             "severity": "Medium",
@@ -42,7 +41,6 @@ def check_ec2_ebs_encryption(instance,instance_name,ec2_volumes):
     return []
 
 def check_ec2_termination_protection(instance_name,instance_attribute):
-    print(instance_attribute["DisableApiTermination"]["Value"])
     if not instance_attribute["DisableApiTermination"]["Value"]:
         return [{
             "rule_id": "EC2-004",

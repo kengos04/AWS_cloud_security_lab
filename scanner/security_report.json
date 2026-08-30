@@ -1,0 +1,126 @@
+{
+    "target": "LocalStack",
+    "region": "eu-west-1",
+    "summary": {
+        "Critical": 1,
+        "High": 2,
+        "Medium": 16,
+        "Low": 0
+    },
+    "findings": [
+        {
+            "rule_id": "S3-003",
+            "severity": "Medium",
+            "title": "S3 bucket versioning is disabled",
+            "resource": "weak-bucket"
+        },
+        {
+            "rule_id": "IAM-003",
+            "severity": "Medium",
+            "title": "Sensitive IAM policies are being permitted",
+            "resource": "iam_testing_policy"
+        },
+        {
+            "rule_id": "IAM-003",
+            "severity": "Medium",
+            "title": "Sensitive IAM policies are being permitted",
+            "resource": "iam_testing_policy"
+        },
+        {
+            "rule_id": "IAM-003",
+            "severity": "Medium",
+            "title": "Sensitive IAM policies are being permitted",
+            "resource": "iam_testing_policy"
+        },
+        {
+            "rule_id": "IAM-004",
+            "severity": "Medium",
+            "title": "Possibly too broad IAM policies are being permitted",
+            "resource": "iam_testing_policy"
+        },
+        {
+            "rule_id": "IAM-005",
+            "severity": "Medium",
+            "title": "iam:PassRole being allowed on all resources",
+            "resource": "iam_testing_policy"
+        },
+        {
+            "rule_id": "IAM-003",
+            "severity": "Medium",
+            "title": "Sensitive IAM policies are being permitted",
+            "resource": "passrole-policy"
+        },
+        {
+            "rule_id": "IAM-004",
+            "severity": "Medium",
+            "title": "Possibly too broad IAM policies are being permitted",
+            "resource": "passrole-policy"
+        },
+        {
+            "rule_id": "IAM-005",
+            "severity": "Medium",
+            "title": "iam:PassRole being allowed on all resources",
+            "resource": "passrole-policy"
+        },
+        {
+            "rule_id": "IAM-001",
+            "severity": "Critical",
+            "title": "Policy with unrestricted access",
+            "resource": "weak_test_policy"
+        },
+        {
+            "rule_id": "IAM-004",
+            "severity": "Medium",
+            "title": "Possibly too broad IAM policies are being permitted",
+            "resource": "weak_test_policy"
+        },
+        {
+            "rule_id": "IAM-002",
+            "severity": "High",
+            "title": "Policy grants wildcard service permissions",
+            "resource": "wildcard_test_policy"
+        },
+        {
+            "rule_id": "IAM-002",
+            "severity": "High",
+            "title": "Policy grants wildcard service permissions",
+            "resource": "wildcard_test_policy"
+        },
+        {
+            "rule_id": "IAM-004",
+            "severity": "Medium",
+            "title": "Possibly too broad IAM policies are being permitted",
+            "resource": "wildcard_test_policy"
+        },
+        {
+            "rule_id": "EC2-002",
+            "severity": "Medium",
+            "title": "EC2 instance allows usage of IMDSv1",
+            "resource": "Lab_Public_EC2"
+        },
+        {
+            "rule_id": "EC2-003",
+            "severity": "Medium",
+            "title": "EC2 instance EBS volume has no encryption",
+            "resource": "Lab_Public_EC2"
+        },
+        {
+            "rule_id": "EC2-004",
+            "severity": "Medium",
+            "title": "EC2 instance does not have termination protection",
+            "resource": "Lab_Public_EC2"
+        },
+        {
+            "rule_id": "EC2-003",
+            "severity": "Medium",
+            "title": "EC2 instance EBS volume has no encryption",
+            "resource": "Lab_Private_EC2"
+        },
+        {
+            "rule_id": "EC2-004",
+            "severity": "Medium",
+            "title": "EC2 instance does not have termination protection",
+            "resource": "Lab_Private_EC2"
+        }
+    ]
+}

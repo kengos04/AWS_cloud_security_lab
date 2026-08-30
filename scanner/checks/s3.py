@@ -37,7 +37,6 @@ def check_s3_approved_encryption(client, bucketname):
 def check_s3_versioning(client,bucketname):
     versioning = client.get_bucket_versioning(Bucket = bucketname)
     if versioning.get("Status") == "Enabled":
-        #print("Versioning Enabled")
         None
     else:
         return[{

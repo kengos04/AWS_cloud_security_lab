@@ -12,114 +12,152 @@
             "rule_id": "S3-003",
             "severity": "Medium",
             "title": "S3 bucket versioning is disabled",
+            "description": "S3 versioning is disabled, so previous versions of objects cannot be recovered.",
+            "recommendation": "Enable versioning on the S3 bucket.",
             "resource": "weak-bucket"
         },
         {
             "rule_id": "IAM-003",
             "severity": "Medium",
             "title": "Sensitive IAM policies are being permitted",
+            "description": "Possibly allows user or roles to escalate access and permissions.",
+            "recommendation": "Enforcing Least Privilage is recommended.",
             "resource": "iam_testing_policy"
         },
         {
             "rule_id": "IAM-003",
             "severity": "Medium",
             "title": "Sensitive IAM policies are being permitted",
+            "description": "Possibly allows user or roles to escalate access and permissions.",
+            "recommendation": "Enforcing Least Privilage is recommended.",
             "resource": "iam_testing_policy"
         },
         {
             "rule_id": "IAM-003",
             "severity": "Medium",
             "title": "Sensitive IAM policies are being permitted",
+            "description": "Possibly allows user or roles to escalate access and permissions.",
+            "recommendation": "Enforcing Least Privilage is recommended.",
             "resource": "iam_testing_policy"
         },
         {
             "rule_id": "IAM-004",
             "severity": "Medium",
             "title": "Possibly too broad IAM policies are being permitted",
+            "description": "Possibly too broad of permission for the required IAM.",
+            "recommendation": "Review policy and enforce Least Privilage if possible.",
             "resource": "iam_testing_policy"
         },
         {
             "rule_id": "IAM-005",
             "severity": "Medium",
             "title": "iam:PassRole being allowed on all resources",
+            "description": "Allowing pass role is a possible vulnerability for attackers to escalate privilege.",
+            "recommendation": "Usage of Least Privilage and condition keys are recommended.",
             "resource": "iam_testing_policy"
         },
         {
             "rule_id": "IAM-003",
             "severity": "Medium",
             "title": "Sensitive IAM policies are being permitted",
+            "description": "Possibly allows user or roles to escalate access and permissions.",
+            "recommendation": "Enforcing Least Privilage is recommended.",
             "resource": "passrole-policy"
         },
         {
             "rule_id": "IAM-004",
             "severity": "Medium",
             "title": "Possibly too broad IAM policies are being permitted",
+            "description": "Possibly too broad of permission for the required IAM.",
+            "recommendation": "Review policy and enforce Least Privilage if possible.",
             "resource": "passrole-policy"
         },
         {
             "rule_id": "IAM-005",
             "severity": "Medium",
             "title": "iam:PassRole being allowed on all resources",
+            "description": "Allowing pass role is a possible vulnerability for attackers to escalate privilege.",
+            "recommendation": "Usage of Least Privilage and condition keys are recommended.",
             "resource": "passrole-policy"
         },
         {
             "rule_id": "IAM-001",
             "severity": "Critical",
             "title": "Policy with unrestricted access",
+            "description": "This policy allows for any action on any resource.",
+            "recommendation": "Usage of Least Privilage is recommended.",
             "resource": "weak_test_policy"
         },
         {
             "rule_id": "IAM-004",
             "severity": "Medium",
             "title": "Possibly too broad IAM policies are being permitted",
+            "description": "Possibly too broad of permission for the required IAM.",
+            "recommendation": "Review policy and enforce Least Privilage if possible.",
             "resource": "weak_test_policy"
         },
         {
             "rule_id": "IAM-002",
             "severity": "High",
             "title": "Policy grants wildcard service permissions",
+            "description": "This policy allows for all action on specific resource.",
+            "recommendation": "Usage of Least Privilage is recommended.",
             "resource": "wildcard_test_policy"
         },
         {
             "rule_id": "IAM-002",
             "severity": "High",
             "title": "Policy grants wildcard service permissions",
+            "description": "This policy allows for all action on specific resource.",
+            "recommendation": "Usage of Least Privilage is recommended.",
             "resource": "wildcard_test_policy"
         },
         {
             "rule_id": "IAM-004",
             "severity": "Medium",
             "title": "Possibly too broad IAM policies are being permitted",
+            "description": "Possibly too broad of permission for the required IAM.",
+            "recommendation": "Review policy and enforce Least Privilage if possible.",
             "resource": "wildcard_test_policy"
         },
         {
             "rule_id": "EC2-002",
             "severity": "Medium",
             "title": "EC2 instance allows usage of IMDSv1",
+            "description": "IMDSv1 could be exploited through server side request forgery attack.",
+            "recommendation": "Usage of IMDSv2 is recommended.",
             "resource": "Lab_Public_EC2"
         },
         {
             "rule_id": "EC2-003",
             "severity": "Medium",
             "title": "EC2 instance EBS volume has no encryption",
+            "description": "EBS being used on this instance is not encrypted, possible vulnerability.",
+            "recommendation": "Enable encryption on the EBS volume.",
             "resource": "Lab_Public_EC2"
         },
         {
             "rule_id": "EC2-004",
             "severity": "Medium",
             "title": "EC2 instance does not have termination protection",
+            "description": "Termination protection is not enabled, possible deletion of instance via AWS management Console, CLI or API.",
+            "recommendation": "Enable termination protection on the EC2 instance.",
             "resource": "Lab_Public_EC2"
         },
         {
             "rule_id": "EC2-003",
             "severity": "Medium",
             "title": "EC2 instance EBS volume has no encryption",
+            "description": "EBS being used on this instance is not encrypted, possible vulnerability.",
+            "recommendation": "Enable encryption on the EBS volume.",
             "resource": "Lab_Private_EC2"
         },
         {
             "rule_id": "EC2-004",
             "severity": "Medium",
             "title": "EC2 instance does not have termination protection",
+            "description": "Termination protection is not enabled, possible deletion of instance via AWS management Console, CLI or API.",
+            "recommendation": "Enable termination protection on the EC2 instance.",
             "resource": "Lab_Private_EC2"
         }
     ]

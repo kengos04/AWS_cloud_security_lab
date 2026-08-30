@@ -60,6 +60,8 @@ def print_findings(findings):
         print(f"Rule:     {finding['rule_id']}")
         print(f"Severity: {finding['severity']}")
         print(f"Title:    {finding['title']}")
+        print(f"Description:  {finding['description']}")
+        print(f"Recommendation: {finding['recommendation']}")
         print(f"Resource: {finding.get('resource', 'N/A')}")
 
 

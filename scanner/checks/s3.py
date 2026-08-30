@@ -11,6 +11,8 @@ def check_s3_public_access(client, bucketname):
             "rule_id": "S3-001",
             "severity": "Critical",
             "title": "S3 bucket has missing public access blocks",
+            "description": "This S3 bucket allows for unauthroized users to access content.",
+            "recommendation": "Enable Block Public Access is recommended.",
             "resource": bucketname
         }]
 
@@ -22,13 +24,14 @@ def check_s3_approved_encryption(client, bucketname):
         encryption = rule["ApplyServerSideEncryptionByDefault"]
         algorithm = encryption.get("SSEAlgorithm")
         if algorithm in ["AES256","aws:kms"]:
-            #print("Using approved encryption: ", algorithm)
             None
         else:
             return[{
                 "rule_id": "S3-002",
                 "severity": "Medium",
                 "title": f"Using unapproved encryption: {algorithm}",
+                "description": "Current S3 bucket is not using the required encryption.",
+                "recommendation": "Change the encryption method to either AES256 or aws:kms.",
                 "resource": bucketname
             }]
 
@@ -43,6 +46,8 @@ def check_s3_versioning(client,bucketname):
             "rule_id": "S3-003",
             "severity": "Medium",
             "title": "S3 bucket versioning is disabled",
+            "description": "S3 versioning is disabled, so previous versions of objects cannot be recovered.",
+            "recommendation": "Enable versioning on the S3 bucket.",
             "resource": bucketname
         }]
 

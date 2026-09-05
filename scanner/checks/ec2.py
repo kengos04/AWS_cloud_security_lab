@@ -46,7 +46,7 @@ def check_ec2_ebs_encryption(instance,instance_name,ec2_volumes):
 
     return []
 
-def check_ec2_termination_protection(instance_name,instance_attribute):
+def check_ec2_termination_protection(instance_attribute,instance_name):
     if not instance_attribute["DisableApiTermination"]["Value"]:
         return [{
             "rule_id": "EC2-004",

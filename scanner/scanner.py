@@ -44,7 +44,7 @@ def cloud_security_check(ec2_client,s3_client,iam_client):
             findings.extend(check_ec2_public_address(instance,instance_name))
             findings.extend(check_ec2_metadata_service(instance,instance_name))
             findings.extend(check_ec2_ebs_encryption(instance,instance_name,ec2_volumes))
-            findings.extend(check_ec2_termination_protection(instance_name,ec2_instance_attribute))
+            findings.extend(check_ec2_termination_protection(ec2_instance_attribute,instance_name))
 
     return findings
 

@@ -105,6 +105,10 @@ JSON Security Report
 ```text
 localstack_lab/
 │
+├── .github/
+│   └── workflows/
+│       └── tests.yml
+│
 ├── main.tf
 ├── variables.tf
 ├── outputs.tf
@@ -113,6 +117,7 @@ localstack_lab/
 ├── .gitignore
 │
 ├── scanner/
+│   ├── __init__.py
 │   ├── scanner.py
 │   ├── clients.py
 │   ├── report.py
@@ -128,7 +133,8 @@ localstack_lab/
     ├── test_ec2.py
     ├── test_iam.py
     ├── test_s3.py
-    └── test_security_groups.py
+    ├── test_security_groups.py
+    └── test_scanner.py
 
 ```
 
@@ -156,7 +162,7 @@ Before running the project, install:
 
 -   Python 3.x
     
--   Terraform
+-   Terraform (terraform-local 'tflocal')
     
 -   LocalStack
 
@@ -235,6 +241,18 @@ The Terraform configuration creates intentionally vulnerable resources that can 
 
 Start the local AWS-compatible environment first.
 
+### Start LocalStack
+
+Start LocalStack using Docker:
+
+```bash
+docker run -d \
+  --name localstack \
+  -p 4566:4566 \
+  -e SERVICES=s3,ec2,iam \
+  -e AWS_DEFAULT_REGION=eu-west-1 \
+  localstack/localstack:latest
+  ```
 Then run:
 
 ```bash
@@ -363,7 +381,7 @@ The project uses `pytest` for automated testing.
 Run the test suite with:
 
 ```bash
-pytest
+python -m pytest
 
 ```
 
@@ -372,6 +390,25 @@ The tests focus on the scanner's security-checking logic using representative AW
 Both vulnerable and secure configurations are tested to reduce false positives and verify that each security rule behaves as expected.
 
 ----------
+
+## Test Results
+
+Example test run: 
+```bash
+=============================== test session starts ===============================
+platform win32 -- Python 3.12.10, pytest-9.1.1, pluggy-1.6.0
+collected 38 items                                                                 
+
+tests\test_ec2.py ........                                                   [ 21%]
+tests\test_iam.py ...............                                            [ 60%]
+tests\test_s3.py .......                                                     [ 78%]
+tests\test_scanner.py ..                                                     [ 84%]
+tests\test_security_groups.py ......                                         [100%]
+
+=============================== 38 passed in 0.05s ================================
+```
+----------
+
 
 ## Security Checks
 
@@ -455,15 +492,9 @@ Install dependencies
    ▼
 Run pytest
    │
-   ▼
-Run security scanner
+   ├── Tests pass → CI passes
    │
-   ▼
-Check scanner exit code
-   │
-   ├── Critical/High → Fail
-   │
-   └── No Critical/High → Pass
+   └── Tests fail → CI fails
 
 ```
 

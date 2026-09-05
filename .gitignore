@@ -27,4 +27,11 @@ crash.*.log
 .DS_Store
 Thumbs.db
 
+# Scanner output
 scan_report.json
+security_report.json
+
+# Python test/cache files
+.pytest_cache/
+.coverage
+htmlcov/

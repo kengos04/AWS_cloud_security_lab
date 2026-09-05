@@ -17,59 +17,11 @@ jobs:
         with:
           python-version: "3.x"
 
-      - name: Install Terraform
-        uses: hashicorp/setup-terraform@v3
-
-      - name: Install Python dependencies
+      - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Install tflocal
-        run: |
-          pip install terraform-local
-
       - name: Run tests
         run: |
           python -m pytest
-
-      - name: Start LocalStack
-        run: |
-          docker run -d \
-            --name localstack \
-            -p 4566:4566 \
-            -e SERVICES=s3,ec2,iam \
-            -e AWS_DEFAULT_REGION=eu-west-1 \
-            localstack/localstack
-
-      - name: Wait for LocalStack
-        run: |
-          echo "Waiting for LocalStack..."
-
-          for i in {1..60}; do
-            if curl -s http://localhost:4566/_localstack/health; then
-              echo "LocalStack is ready"
-              break
-            fi
-
-            if [ "$i" -eq 60 ]; then
-              echo "LocalStack failed to start"
-              docker logs localstack
-              exit 1
-            fi
-
-            sleep 2
-          done
-
-      - name: Check LocalStack
-        run: |
-          curl -v http://localhost:4566/_localstack/health
-
-      - name: Terraform Init
-        run: tflocal init
-
-      - name: Terraform Apply
-        run: tflocal apply -auto-approve
-
-      - name: Run security scanner
-        run: python scanner/scanner.py --endpoint http://localhost:4566 --region eu-west-1

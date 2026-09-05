@@ -44,15 +44,26 @@ jobs:
 
       - name: Wait for LocalStack
         run: |
-          for i in {1..30}; do
-            if curl -s http://localhost:4566/_localstack/health > /dev/null; then
+          echo "Waiting for LocalStack..."
+
+          for i in {1..60}; do
+            if curl -s http://localhost:4566/_localstack/health; then
               echo "LocalStack is ready"
               break
             fi
 
-            echo "Waiting for LocalStack..."
+            if [ "$i" -eq 60 ]; then
+              echo "LocalStack failed to start"
+              docker logs localstack
+              exit 1
+            fi
+
             sleep 2
           done
+
+      - name: Check LocalStack
+        run: |
+          curl -v http://localhost:4566/_localstack/health
 
       - name: Terraform Init
         run: tflocal init

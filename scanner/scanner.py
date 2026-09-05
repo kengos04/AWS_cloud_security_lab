@@ -85,14 +85,18 @@ def main():
     args = parse_arguments()
     endpoint_url = args.endpoint
     region = args.region
-    ec2_client,s3_client,iam_client = create_client(endpoint_url,"eu-west-1")
-    findings = cloud_security_check(ec2_client,s3_client,iam_client)
-    #print_findings(findings)
-    create_report(findings)
-    for finding in findings:
-        if finding.get("severity") in ["Critical","High"]:
-            sys.exit(1)
-    sys.exit(0)
+    try:
+        ec2_client,s3_client,iam_client = create_client(endpoint_url,region)
+        findings = cloud_security_check(ec2_client,s3_client,iam_client)
+        #print_findings(findings)
+        create_report(findings)
+        for finding in findings:
+            if finding.get("severity") in ["Critical","High"]:
+                sys.exit(1)
+        sys.exit(0)
+    except Exception as error:
+        print(f"Scanner error: {error}")
+        sys.exit(1)
 
 
 
